@@ -11,6 +11,7 @@
     "test": "npm run test:lint && npm run test:unit"
   },
   "dependencies": {
+    "formidable": "^1.2.2",
     "next": "10.0.3",
     "pretty-bytes": "^5.4.1",
     "prop-types": "^15.7.2",

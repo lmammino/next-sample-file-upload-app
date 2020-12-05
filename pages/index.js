@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from 'react'
+import { useReducer, useEffect, useRef, useCallback } from 'react'
 import Head from 'next/head'
 import prettyBytes from 'pretty-bytes'
 import styles from '../styles/Home.module.css'
@@ -74,8 +74,31 @@ async function triggerFileDelete (filename, dispatch) {
   }
 }
 
+async function triggerUpload (fileInput, dispatch) {
+  fileInput.click()
+  console.log(fileInput.files)
+  if (fileInput.files.length >= 1) {
+    // TODO: add frontend and backend validation
+    // TODO: fix intermittent issue where upload is only triggered on the second click (probably will need to use onChange)
+    // TODO: refresh UI with new file
+    // TODO: show some indicator that the upload is in progress
+    console.log('UPLOADING...', fileInput.files[0].name)
+    const formData = new FormData()
+    formData.append('file', fileInput.files[0])
+    const response = await fetch('/api/fs/upload', {
+      method: 'POST',
+      body: formData
+    })
+    console.log(formData, response)
+  }
+}
+
 export default function Home () {
+  const fileInput = useRef(null)
   const [state, dispatch] = useReducer(reducer, initialState)
+  const startUpload = useCallback(() => {
+    triggerUpload(fileInput.current, dispatch)
+  }, [fileInput, dispatch])
 
   useEffect(function () {
     (async function getData () {
@@ -94,7 +117,13 @@ export default function Home () {
 
       <main className={styles.main}>
         <nav className={styles.nav}>
-          <button className={styles.upload_btn}>UPLOAD</button>
+          <button
+            className={styles.upload_btn}
+            onClick={(e) => {
+              e.preventDefault()
+              startUpload()
+            }}
+          >UPLOAD</button>
           <input
             className={styles.search_input}
             type="text"
@@ -122,6 +151,9 @@ export default function Home () {
             </ul>
           </>)}
       </main>
+
+      <input ref={fileInput} type="file" name="file" style={{ display: 'none' }} />
+
     </div>
   )
 }
