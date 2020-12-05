@@ -19,42 +19,42 @@ export default function Home () {
           <span>Total size: 600kb</span>
         </header>
         <ul className={styles.files_container}>
-          <li>
+          <li className={styles.file_card}>
             <h3>Doc1</h3>
             <footer>
               <span>100kb</span>
               <button className={styles.delete_btn}>delete</button>
             </footer>
           </li>
-          <li>
+          <li className={styles.file_card}>
             <h3>Doc2</h3>
             <footer>
               <span>100kb</span>
               <button className={styles.delete_btn}>delete</button>
             </footer>
           </li>
-          <li>
+          <li className={styles.file_card}>
             <h3>Doc3</h3>
             <footer>
               <span>100kb</span>
               <button className={styles.delete_btn}>delete</button>
             </footer>
           </li>
-          <li>
+          <li className={styles.file_card}>
             <h3>Doc4</h3>
             <footer>
               <span>100kb</span>
               <button className={styles.delete_btn}>delete</button>
             </footer>
           </li>
-          <li>
+          <li className={styles.file_card}>
             <h3>Doc5</h3>
             <footer>
               <span>100kb</span>
               <button className={styles.delete_btn}>delete</button>
             </footer>
           </li>
-          <li>
+          <li className={styles.file_card}>
             <h3>Doc6</h3>
             <footer>
               <span>100kb</span>
