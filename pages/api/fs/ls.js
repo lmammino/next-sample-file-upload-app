@@ -6,6 +6,7 @@ const { serverRuntimeConfig } = getConfig()
 
 export default async function handler (req, res) {
   if (req.method !== 'GET') {
+    res.setHeader('Allow', ['GET'])
     res.statusCode = 405
     return res.json({ error: 'Method not supported' })
   }
