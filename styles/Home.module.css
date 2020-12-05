@@ -79,6 +79,13 @@
   margin: 0;
   flex-grow: 1;
   margin-top: 1rem;
+  width: 100%;
+}
+
+.file_card h3 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .file_card:first-child {
@@ -146,6 +153,11 @@
   .file_card {
     margin: 0;
     width: 32%;
+    flex: 1 0 32%;
+  }
+
+  .file_card:last-of-type { 
+    flex-grow: 0;
   }
 
   .file_card:first-child {
