@@ -66,20 +66,17 @@
 
 .files_container {
   display: flex;
-  flex-direction: column;
   flex-wrap: wrap;
   padding: 0;
   width: 100%;
 }
 
 .file_card {
-  border: 1px solid black;
+  border: 1px solid #ccc;
   list-style: none;
-  padding: 1rem;
-  margin: 0;
-  flex-grow: 1;
-  margin-top: 1rem;
+  padding: 1em;
   width: 100%;
+  margin: .5rem 0;
 }
 
 .file_card h3 {
@@ -152,8 +149,9 @@
   
   .file_card {
     margin: 0;
-    width: 32%;
-    flex: 1 0 32%;
+    width: auto;
+    max-width: calc(50% - 1em);
+    flex: 1 1 calc(50% - 1em);
   }
 
   .file_card:last-of-type { 
@@ -162,5 +160,14 @@
 
   .file_card:first-child {
     margin: 0;
+  }
+}
+
+@media only screen and (min-width: 540px) {
+  .file_card {
+    margin: 0;
+    width: auto;
+    max-width: calc(33% - 1em);
+    flex: 1 1 calc(33% - 1em);
   }
 }
