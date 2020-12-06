@@ -131,3 +131,8 @@ curl --form file='@filename.jpg' http://localhost:3000/api/fs/upload | jq .
   "size": 13234444
 }
 ```
+
+
+## Other notes
+
+- Tests are running at every commit on GitHub using [GitHub actions](/.github/workflows/main.yml): https://github.com/lmammino/next-sample-file-upload-app/actions
