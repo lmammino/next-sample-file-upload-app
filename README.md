@@ -1,6 +1,6 @@
 # Luciano Mammino - 2020-12-06
 
-A simple Next.js application to manage file uploads to a folder.
+An attempt to build a simple Next.js application to manage file uploads to a folder in just 48 hours.
 
 ## Installation
 
@@ -13,12 +13,12 @@ You can also run the the test suite (lint and unit tests) with `yarn test`
 
 ## Security
 
-- This application does NOT provide any authentication/authorization mechanism
-- This application does NOT provide any other mechanism (e.g. CSRF) to prevent malicious bodies to retrieve the list of files directly (`curl http://localhost:3000/api/fs/ls | jq .` will show all the available files). Of course, this doesn't make the app ready to be shipped to a remote server
-- The application validates file uploads (max file size / file type) on both frontend and backend
+- This application does NOT provide any authentication/authorization mechanism.
+- This application does NOT provide any other mechanism (e.g. CSRF) to prevent malicious bodies to retrieve the list of files directly (`curl http://localhost:3000/api/fs/ls | jq .` will show all the available files). Of course, this doesn't make the app ready to be shipped to a remote server.
+- The application validates file uploads (max file size / file type) on both frontend and backend.
 - On the backend, the upload is carried over only if files are valid. Data is initially stored in a temp folder and only moved to the final destination if all the validation rules pass. Mime type validation is done as soon as the file is started to be uploaded, while file size is checked in a streaming fashion: as soon as the stream goes over the maximum expected size, the stream is interrupted.
-- The frontend application does not set HTML dynamically (Normal react data binding should take care of most sanitization needs)
-- During the upload, the original file name is used to compute the actual destination name in the final data folder. The storage is kept flat. In order to avoid attempts to escape the final destination folder, every `/` or `\` in the original file name are replaced to `_`
+- The frontend application does not set HTML dynamically (Normal react data binding should take care of most sanitization needs).
+- During the upload, the original file name is used to compute the actual destination name in the final data folder. The storage is kept flat. In order to avoid attempts to escape the final destination folder, every `/` or `\` in the original file name are replaced to `_`.
 - If a file already exists with a given name, the final file is given a random suffix to avoid overriding the original file.
 
 
@@ -28,9 +28,12 @@ Some potential improvements that are currently missing:
 
   - Some dialogs (errors, confirm messages) have been implemented using `alert` and `confirm`. This is not ideal for many reasons (bad UI/UX, blocking the event loop, etc.), so with more time I would have used dedicated react components to handle these interactions (e.g. a toast component like [`react-toast-notifications`](https://jossmac.github.io/react-toast-notifications/)).
   - With more time I would have added some sort of Authentication mechanism or at least some CSRF mechanism to make the backend API more secure.
-  - Backend tests are missing
-  - E2E tests are missing (something like Cypress might have been nice here)
+  - Backend tests are missing.
+  - E2E tests are missing (something like Cypress might have been nice here).
   - For simplicity of implementation, the UI will always have a partial view of the content of the data folder. It is loaded at startup and then kept in sync while the various delete or upload operations happen. If files are added or deleted manually (or from another UI) these changes won't be immediately reflected in the UI. It could have been nice to explore a different architecture using websockets to keep the UI always in sync. A simpler alternative (not implemented here), could be to poll the API layer to retrieve the list of files at given intervals of time rather than doing it only once at startup time.
+  - With a bit more time investment, it would have been nice to implement support for uploading files via drag and drop.
+  - For simplicity and speed of development I kept the bulk of the business logic in the `Home` component. This is to all effects a _mega-component_ and should probably be broken down into smaller and more reusable components.
+  - Tests have been written in a rush and they are not the most polished. With a bit more time it would be nice to refactor them and make them more _content-independent_ by using `data-testid` attributes rather than matching by content.
 
 
 ## Libraries
@@ -40,6 +43,10 @@ Some potential improvements that are currently missing:
   - [`pretty-bytes`](https://npm.im/pretty-bytes): To easily convert byte units into more readable strings (e.g. `1000 -> 1 kb` ).
   - [`formidable`](https://npm.im/formidable): To handle multipart form submissions in a streaming way on the backend.
   - [`eslint`](https://npm.im/eslint): To make sure coding style is consistent (using [StandardJS style](https://standardjs.com/)) and to spot common JavaScript mistakes.
+  - [`jest`](https://npm.im/jest): Test runner.
+  - [babel-jest](https://npm.im/babel-jest): To be able to transpile files at runtime while running Jest.
+  - [`@testing-library/jest-dom`](https://npm.im/@testing-library/jest-dom): To simplify writing React tests with Jest.
+  - [`identity-obj-proxy`](https://npm.im/identity-obj-proxy): a utility to mock CSS modules in tests.
 
 
 ## API

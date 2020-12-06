@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "test:lint": "eslint .",
-    "test:unit": "echo 'UNIT TESTS - TODO'",
+    "test:unit": "jest --verbose --coverage",
     "test": "npm run test:lint && npm run test:unit"
   },
   "dependencies": {
@@ -19,12 +19,17 @@
     "react-dom": "17.0.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.6",
+    "@testing-library/react": "^11.2.2",
+    "babel-jest": "^26.6.3",
     "eslint": "^7.15.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-react": "^7.21.5"
+    "eslint-plugin-react": "^7.21.5",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^26.6.3"
   },
   "license": "MIT"
 }

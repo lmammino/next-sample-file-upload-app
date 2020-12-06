@@ -176,6 +176,7 @@ export default function Home () {
       </main>
 
       <input
+        data-testid="upload-field"
         ref={fileInput}
         type="file"
         name="file"
