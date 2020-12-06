@@ -1,10 +1,20 @@
-import { join } from 'path'
-import { rename } from 'fs/promises'
+import { join, basename, extname } from 'path'
+import { rename, access } from 'fs/promises'
+import { constants } from 'fs'
 import getConfig from 'next/config'
 import formidable from 'formidable'
 import uploadConfig from '../../_uploadConfig'
 
 const { serverRuntimeConfig } = getConfig()
+
+async function fileExists (filePath) {
+  try {
+    await access(filePath, constants.F_OK)
+    return true
+  } catch (_) {
+    return false
+  }
+}
 
 function handleUpload (form, req) {
   return new Promise((resolve, reject) => {
@@ -45,10 +55,22 @@ export default async function handler (req, res) {
       return res.json({ error: 'Missing file in request' })
     }
 
-    await rename(file.path, join(serverRuntimeConfig.DATA_PATH, file.name))
+    // avoids potential directory traversal attacks
+    let finalFilePath = join(serverRuntimeConfig.DATA_PATH, file.name.replace(/[/\\]+/g, '_'))
+    let finalFileName = basename(finalFilePath)
+
+    // avoids potential file overrides
+    if (await fileExists(finalFilePath)) {
+      const extension = extname(finalFileName)
+      const timestamp = Date.now()
+      finalFileName = `${finalFileName.substr(0, finalFileName.length - extension.length)}_copy_${timestamp}${extension}`
+      finalFilePath = join(serverRuntimeConfig.DATA_PATH, finalFileName)
+    }
+
+    await rename(file.path, finalFilePath)
 
     res.statusCode = 201
-    return res.json({ name: file.name, size: file.size })
+    return res.json({ name: finalFileName, size: file.size })
   } catch (err) {
     res.statusCode = 400
     return res.json({ error: err.message })

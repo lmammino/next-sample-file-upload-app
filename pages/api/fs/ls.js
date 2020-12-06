@@ -21,8 +21,6 @@ export default async function handler (req, res) {
     return { name: f.name, size: fileStats.size }
   }))
 
-  const totalSize = filesWithSize.reduce((acc, curr) => acc + curr.size, 0)
-
   res.statusCode = 200
-  res.json({ files: filesWithSize, totalSize })
+  res.json({ files: filesWithSize })
 }
