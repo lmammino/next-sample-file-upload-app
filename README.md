@@ -35,11 +35,6 @@ Some potential improvements that are currently missing:
 
 ## Libraries
 
-  "formidable": "^1.2.2",
-    "next": "10.0.3",
-    "pretty-bytes": "^5.4.1",
-    "prop-types": "^15.7.2",
-
   - [`next`](https://npm.im/next): Next.js, to quickly scaffold a React application with backend APIs.
   - [`prop-types`](https://npm.im/prop-types): To validate props being passed to components.
   - [`pretty-bytes`](https://npm.im/pretty-bytes): To easily convert byte units into more readable strings (e.g. `1000 -> 1 kb` ).
