@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useRef, useCallback } from 'react'
+import { useReducer, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import prettyBytes from 'pretty-bytes'
 import styles from '../styles/Home.module.css'
@@ -6,6 +6,7 @@ import FileCard from '../components/fileCard'
 
 const initialState = {
   initialLoading: true,
+  uploading: false,
   allFiles: [],
   filteredFiles: [],
   deletingFiles: new Set(),
@@ -54,6 +55,14 @@ function reducer (state, action) {
       const [filteredFiles, filteredTotalFileSize] = filterFiles(allFiles, state.searchKeyword)
       return { ...state, deletingFiles, allFiles, filteredFiles, filteredTotalFileSize }
     }
+    case 'uploadStart': {
+      return { ...state, uploading: true }
+    }
+    case 'uploadEnd': {
+      const allFiles = [...state.allFiles, action.newFile]
+      const [filteredFiles, filteredTotalFileSize] = filterFiles(allFiles, state.searchKeyword)
+      return { ...state, uploading: false, allFiles, filteredFiles, filteredTotalFileSize }
+    }
   }
 
   return state
@@ -75,30 +84,24 @@ async function triggerFileDelete (filename, dispatch) {
 }
 
 async function triggerUpload (fileInput, dispatch) {
-  fileInput.click()
-  console.log(fileInput.files)
   if (fileInput.files.length >= 1) {
     // TODO: add frontend and backend validation
-    // TODO: fix intermittent issue where upload is only triggered on the second click (probably will need to use onChange)
-    // TODO: refresh UI with new file
-    // TODO: show some indicator that the upload is in progress
-    console.log('UPLOADING...', fileInput.files[0].name)
     const formData = new FormData()
     formData.append('file', fileInput.files[0])
+    dispatch({ type: 'uploadStart' })
     const response = await fetch('/api/fs/upload', {
       method: 'POST',
       body: formData
     })
-    console.log(formData, response)
+    const newFile = await response.json()
+    // TODO: handle upload errors
+    dispatch({ type: 'uploadEnd', newFile })
   }
 }
 
 export default function Home () {
   const fileInput = useRef(null)
   const [state, dispatch] = useReducer(reducer, initialState)
-  const startUpload = useCallback(() => {
-    triggerUpload(fileInput.current, dispatch)
-  }, [fileInput, dispatch])
 
   useEffect(function () {
     (async function getData () {
@@ -119,11 +122,12 @@ export default function Home () {
         <nav className={styles.nav}>
           <button
             className={styles.upload_btn}
+            disabled={state.uploading}
             onClick={(e) => {
               e.preventDefault()
-              startUpload()
+              fileInput.current.click()
             }}
-          >UPLOAD</button>
+          >{state.uploading ? 'Uploading...' : 'UPLOAD'}</button>
           <input
             className={styles.search_input}
             type="text"
@@ -152,7 +156,15 @@ export default function Home () {
           </>)}
       </main>
 
-      <input ref={fileInput} type="file" name="file" style={{ display: 'none' }} />
+      <input
+        ref={fileInput}
+        type="file"
+        name="file"
+        style={{ display: 'none' }}
+        onChange={(e) => {
+          triggerUpload(e.currentTarget, dispatch)
+        }}
+        />
 
     </div>
   )
