@@ -3,6 +3,7 @@ import Head from 'next/head'
 import prettyBytes from 'pretty-bytes'
 import styles from '../styles/Home.module.css'
 import FileCard from '../components/fileCard'
+import uploadConfig from './_uploadConfig'
 
 const initialState = {
   initialLoading: true,
@@ -58,6 +59,9 @@ function reducer (state, action) {
     case 'uploadStart': {
       return { ...state, uploading: true }
     }
+    case 'uploadError': {
+      return { ...state, uploading: false }
+    }
     case 'uploadEnd': {
       const allFiles = [...state.allFiles, action.newFile]
       const [filteredFiles, filteredTotalFileSize] = filterFiles(allFiles, state.searchKeyword)
@@ -84,18 +88,33 @@ async function triggerFileDelete (filename, dispatch) {
 }
 
 async function triggerUpload (fileInput, dispatch) {
+  // NOTE: in real life all alerts here should be handled by a proper notification/toast component
   if (fileInput.files.length >= 1) {
-    // TODO: add frontend and backend validation
+    const file = fileInput.files[0]
+
+    if (!uploadConfig.supportedMimeTypes.includes(file.type)) {
+      return alert('Invalid file type')
+    }
+
+    if (file.size > uploadConfig.maxFileSize) {
+      return alert('File is bigger than the maximum supported file size')
+    }
+
     const formData = new FormData()
-    formData.append('file', fileInput.files[0])
+    formData.append('file', file)
     dispatch({ type: 'uploadStart' })
     const response = await fetch('/api/fs/upload', {
       method: 'POST',
       body: formData
     })
-    const newFile = await response.json()
-    // TODO: handle upload errors
-    dispatch({ type: 'uploadEnd', newFile })
+    if (response.status !== 201) {
+      const error = await response.json()
+      dispatch({ type: 'uploadError', error })
+      alert(`Cannot upload selected file: ${error.error}`)
+    } else {
+      const newFile = await response.json()
+      dispatch({ type: 'uploadEnd', newFile })
+    }
   }
 }
 
@@ -161,10 +180,12 @@ export default function Home () {
         type="file"
         name="file"
         style={{ display: 'none' }}
+        accept={uploadConfig.supportedMimeTypes.join(', ')}
+        multiple={false}
         onChange={(e) => {
           triggerUpload(e.currentTarget, dispatch)
         }}
-        />
+      />
 
     </div>
   )
